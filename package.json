@@ -1,0 +1,23 @@
+{
+  "name": "component-scanner",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    "default": "./src/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "uvu tests -i fixtures"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ts-migrate": "^0.1.35",
+    "typescript": "^5.4.3",
+    "uvu": "^0.5.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1"
+  }
+}
