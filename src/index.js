@@ -5,6 +5,60 @@ import { isVueClassAPI } from './vue/class.js';
 import { isVueJSX } from './vue/jsx.js';
 import { isVueCompositionAPI } from './vue/composition.js';
 import { isVueOptionAPI } from './vue/option.js';
+import { COMPONENT_TYPE } from './constant/index.js';
+
+/**
+ * 
+ * @param {Map<string, string>} cache 
+ */
+function printResult (cache) {
+  const reactFunctionFileList = [];
+  const reactClassFileList = [];
+  const vueOptionFileList = [];
+  const vueCompositionFileList = [];
+  for (const [key, value] of cache) {
+    if(value === COMPONENT_TYPE.REACT_FUNCTION) {
+      reactFunctionFileList.push(key);
+    }
+    if(value === COMPONENT_TYPE.REACT_CLASS) {
+      reactClassFileList.push(key);
+    }
+    if(value === COMPONENT_TYPE.VUE_OPTION) {
+      vueOptionFileList.push(key);
+    }
+    if(value === COMPONENT_TYPE.VUE_COMPOSITION) {
+      vueCompositionFileList.push(key);
+    }
+  }
+  if(reactFunctionFileList.length > 0) {
+    console.log(`${COMPONENT_TYPE.REACT_FUNCTION}(${reactFunctionFileList.length}):`);
+    reactFunctionFileList.forEach((item) => {
+      console.log(item);
+    })
+    console.log('\r\n');
+  }
+  if(reactClassFileList.length > 0) {
+    console.log(`${COMPONENT_TYPE.REACT_CLASS}(${reactClassFileList.length}):`);
+    reactClassFileList.forEach((item) => {
+      console.log(item);
+    })
+    console.log('\r\n');
+  }
+  if(vueOptionFileList.length > 0) {
+    console.log(`${COMPONENT_TYPE.VUE_OPTION}(${vueOptionFileList.length}):`);
+    vueOptionFileList.forEach((item) => {
+      console.log(item);
+    })
+    console.log('\r\n');
+  }
+  if(vueCompositionFileList.length > 0) {
+    console.log(`${COMPONENT_TYPE.VUE_COMPOSITION}(${vueCompositionFileList.length}):`);
+    vueCompositionFileList.forEach((item) => {
+      console.log(item);
+    })
+    console.log('\r\n');
+  }
+}
 
 /**
  * 
@@ -30,10 +84,10 @@ export function componentScanner(sourceFile) {
       containsJsxElement = true;
     }
 
-    if(isVueJSX(node)) {
-      console.log('is Vue JSX API');
-      containsJsxElement = true;
-    }
+    // if(isVueJSX(node)) {
+    //   console.log('is Vue JSX API');
+    //   containsJsxElement = true;
+    // }
 
     if(isVueClassAPI(node)) {
       console.log('is Vue Class API');
@@ -78,16 +132,14 @@ export function parse(entry) {
    * @param {ts.Node} node 
    */
  const visit = (node) => {
-
+  console.log(node);
 
   if (isReactFunctionComponent(node)) {
-    console.log(currentSourceFile?.fileName, 'is React Function Component');
-    cache.set(currentSourceFile?.fileName,  'React Function Component');
+    cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.REACT_FUNCTION);
   }
   
   if(isReactClassComponent(node)) {
-    console.log(currentSourceFile?.fileName, 'is React Class Component');
-    cache.set(currentSourceFile?.fileName,  'React Class Component');
+    cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.REACT_CLASS);
   }
 
   // if(isVueJSX(node)) {
@@ -95,16 +147,17 @@ export function parse(entry) {
   //   cache.set(currentSourceFile?.fileName,  'is Vue JSX API');
   // }
 
-  // if(isVueOptionAPI(node)) {
-  //   console.log(currentSourceFile?.fileName, 'is Vue Option API');
-  //   cache.set(currentSourceFile?.fileName, 'is Vue Option API');
-  // } else if(isVueClassAPI(node)) {
-  //   console.log(currentSourceFile?.fileName, 'is Vue Class API');
-  //   cache.set(currentSourceFile?.fileName,  'is Vue Class API');
-  // } else if(isVueCompositionAPI(node)) {
-  //   console.log(currentSourceFile?.fileName, 'is Vue Composition API');
-  //   cache.set(currentSourceFile?.fileName, 'is Vue Composition API');
+  if(isVueOptionAPI(node)) {
+    cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_OPTION);
+  }
+
+  // if(isVueClassAPI(node)) {
+  //   cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_CLASS);
   // }
+
+  if(isVueCompositionAPI(node)) {
+    cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
+  }
 
 
 
@@ -112,9 +165,9 @@ export function parse(entry) {
     ts.forEachChild(node, visit);
   }
  }
-  const program = ts.createProgram(entry, {
-    jsx: ts.JsxEmit.ReactJSX,
-  });
+
+ console.log(entry);
+  const program = ts.createProgram(entry, {});
 
   const sourceFiles = program.getSourceFiles().filter((sourceFile) => {
     return (
@@ -123,8 +176,14 @@ export function parse(entry) {
     );
   });
 
+  console.log(sourceFiles);
+
   sourceFiles.forEach((sourceFile) => {
     currentSourceFile = sourceFile;
     ts.forEachChild(sourceFile, visit);
   });
+
+  console.log(cache);
+
+  printResult(cache);
 }
