@@ -35,6 +35,14 @@ componentlook --help
     $ componentlook my-entry
 ```
 
+## Example
+
+The tsconfig is needed in the workspace root.
+
+```
+componentlook tests/fixtures/react/index.tsx
+```
+
 ## License
 
 [MIT@brandonxiang](LICENSE)

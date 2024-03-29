@@ -7,7 +7,8 @@
   },
   "type": "module",
   "scripts": {
-    "test": "uvu tests -i fixtures"
+    "test": "uvu tests -i fixtures",
+    "start": "node tests/parse-react-file/index.test.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,8 @@
   "devDependencies": {
     "@types/node": "^20.3.1",
     "uvu": "^0.5.6",
-    "sade": "^1.8.1"
+    "sade": "^1.8.1",
+    "load-json-file": "^7.0.1"
   },
   "bin": {
     "componentlook": "bin.js"

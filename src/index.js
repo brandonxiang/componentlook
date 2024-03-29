@@ -7,64 +7,8 @@ import { isVueCompositionAPI } from "./vue/composition.js";
 import { isVueOptionAPI } from "./vue/option.js";
 import { COMPONENT_TYPE } from "./constant/index.js";
 import path from "path";
-import { createRequire } from "module";
+import { printResult, readJson } from "./utils/index.js";
 
-/**
- *
- * @param {Map<string, string>} cache
- */
-function printResult(cache) {
-  const reactFunctionFileList = [];
-  const reactClassFileList = [];
-  const vueOptionFileList = [];
-  const vueCompositionFileList = [];
-  for (const [key, value] of cache) {
-    if (value === COMPONENT_TYPE.REACT_FUNCTION) {
-      reactFunctionFileList.push(key);
-    }
-    if (value === COMPONENT_TYPE.REACT_CLASS) {
-      reactClassFileList.push(key);
-    }
-    if (value === COMPONENT_TYPE.VUE_OPTION) {
-      vueOptionFileList.push(key);
-    }
-    if (value === COMPONENT_TYPE.VUE_COMPOSITION) {
-      vueCompositionFileList.push(key);
-    }
-  }
-  if (reactFunctionFileList.length > 0) {
-    console.log(
-      `${COMPONENT_TYPE.REACT_FUNCTION}(${reactFunctionFileList.length}):`
-    );
-    reactFunctionFileList.forEach((item) => {
-      console.log(item);
-    });
-    console.log("\r\n");
-  }
-  if (reactClassFileList.length > 0) {
-    console.log(`${COMPONENT_TYPE.REACT_CLASS}(${reactClassFileList.length}):`);
-    reactClassFileList.forEach((item) => {
-      console.log(item);
-    });
-    console.log("\r\n");
-  }
-  if (vueOptionFileList.length > 0) {
-    console.log(`${COMPONENT_TYPE.VUE_OPTION}(${vueOptionFileList.length}):`);
-    vueOptionFileList.forEach((item) => {
-      console.log(item);
-    });
-    console.log("\r\n");
-  }
-  if (vueCompositionFileList.length > 0) {
-    console.log(
-      `${COMPONENT_TYPE.VUE_COMPOSITION}(${vueCompositionFileList.length}):`
-    );
-    vueCompositionFileList.forEach((item) => {
-      console.log(item);
-    });
-    console.log("\r\n");
-  }
-}
 
 /**
  *
@@ -126,13 +70,14 @@ export function componentScanner(sourceFile) {
  * @param {{tsconfig?: string}} options
  * @returns
  */
-export function parse(_entry, options) {
+export async function parse(_entry, options) {
   const entry = _entry.map((m) => path.resolve(m));
   const defaultTsconfigPath = path.resolve("tsconfig.json");
-  const require = createRequire(import.meta.url);
-  const tsConfig = require(options.tsconfig || defaultTsconfigPath);
 
-  // console.log(tsConfig);
+  console.log(options.tsconfig || defaultTsconfigPath);
+  const tsConfig = await readJson(options.tsconfig || defaultTsconfigPath);
+
+  console.log(tsConfig);
 
   let cache = new Map();
   /** @type {ts.SourceFile | null} */
