@@ -14,10 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "ts-migrate": "^0.1.35",
-    "typescript": "^5.4.3",
-    "uvu": "^0.5.6"
+    "typescript": "^5.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.3.1"
+    "@types/node": "^20.3.1",
+    "uvu": "^0.5.6",
+    "sade": "^1.8.1"
+  },
+  "bin": {
+    "componentlook": "bin.js"
   }
 }
