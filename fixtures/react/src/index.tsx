@@ -1,7 +1,7 @@
 //@ts-nocheck
 import React, { Component } from 'react';
-import Head from './head.tsx';
-import Foot from './foot.tsx';
+import Head from './head.jsx';
+import Foot from './foot.jsx';
 
 export default class MyComponent extends Component {
   render() {

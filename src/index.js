@@ -1,13 +1,15 @@
 import ts from "typescript";
-import { isReactFunctionComponent } from "./react/functionComponent.js";
-import { isReactClassComponent } from "./react/classComponent.js";
-import { isVueClassAPI } from "./vue/class.js";
-import { isVueJSX } from "./vue/jsx.js";
-import { isVueCompositionAPI } from "./vue/composition.js";
-import { isVueOptionAPI } from "./vue/option.js";
+import { isReactFunctionComponent } from "./pattern/react/functionComponent.js";
+import { isReactClassComponent } from "./pattern/react/classComponent.js";
+import { isVueClassAPI } from "./pattern/vue/class.js";
+import { isVueJSX } from "./pattern/vue/jsx.js";
+import { isVueCompositionAPI } from "./pattern/vue/composition.js";
+import { isVueOptionAPI } from "./pattern/vue/option.js";
 import { COMPONENT_TYPE } from "./constant/index.js";
 import path from "path";
-import { printResult, readJson } from "./utils/index.js";
+import { printResult } from "./utils/index.js";
+import { getDependencies, readJson } from "./utils/string.js";
+import { existsSync } from "fs";
 
 
 /**
@@ -67,30 +69,43 @@ export function componentScanner(sourceFile) {
 /**
  *
  * @param {string[]} _entry
- * @param {{tsconfig?: string}} options
+ * @param {{tsconfig?: string}} [options]
  * @returns
  */
 export async function parse(_entry, options) {
   const entry = _entry.map((m) => path.resolve(m));
   const defaultTsconfigPath = path.resolve("tsconfig.json");
+  const defaultPackageJsonPath = path.resolve("package.json");
+  if(!existsSync(defaultPackageJsonPath)) {
+    console.error('Please run at the workspace root. ');
+    process.exit(-1);
+  }
+  if(!existsSync(defaultTsconfigPath)) {
+    console.error('Please add a tsconfig at the workspace root, or customize it. ');
+    process.exit(-1);
+  }
+  const tsConfig = await readJson(options?.tsconfig || defaultTsconfigPath);
+  const packageJson = await readJson(defaultPackageJsonPath);
+  const dependencies = getDependencies(packageJson);
+  const isReact = dependencies.has('react');
+  const isVue = dependencies.has('vue');
 
-  console.log(options.tsconfig || defaultTsconfigPath);
-  const tsConfig = await readJson(options.tsconfig || defaultTsconfigPath);
-
-  console.log(tsConfig);
 
   let cache = new Map();
   /** @type {ts.SourceFile | null} */
   let currentSourceFile = null;
   /** @param {ts.Node} node */
   const visit = (node) => {
-    if (isReactFunctionComponent(node)) {
-      cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_FUNCTION);
+    if(isReact) {
+      if (isReactFunctionComponent(node)) {
+        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_FUNCTION);
+      }
+  
+      if (isReactClassComponent(node)) {
+        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_CLASS);
+      }
     }
 
-    if (isReactClassComponent(node)) {
-      cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_CLASS);
-    }
 
     // if(isVueJSX(node)) {
     //   console.log(currentSourceFile?.fileName, 'is Vue JSX API');

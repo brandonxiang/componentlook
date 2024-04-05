@@ -1,5 +1,5 @@
 import { COMPONENT_TYPE } from "../constant/index.js";
-import fs from 'fs';
+
 
 /**
  *
@@ -58,15 +58,3 @@ export function printResult(cache) {
   }
 }
 
-/**
- * 
- * @param {string} path 
- * @returns 
- */
-export function readJson(path) {
-  const jsonString = fs.readFileSync(path, 'utf8');
-  const jsonWithoutComments = jsonString.replace(/\/\/.*|\/\*[^]*?\*\//g, '');
-  const data = JSON.parse(jsonWithoutComments);
-
-  return data;
-}

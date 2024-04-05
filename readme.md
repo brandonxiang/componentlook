@@ -41,15 +41,15 @@ The tsconfig is needed in the workspace root.
 
 ```bash
 # you type
-componentlook tests/fixtures/react/index.tsx
+componentlook fixtures/react/index.tsx
 
 # output
 #React Function Component(2):
-#/Users/weipingxiang/github/componentlook/tests/fixtures/react/head.tsx
-#/Users/weipingxiang/github/componentlook/tests/fixtures/react/foot.tsx
+#/Users/weipingxiang/github/componentlook/fixtures/react/head.tsx
+#/Users/weipingxiang/github/componentlook/fixtures/react/foot.tsx
 
 #React Class Component(1):
-#/Users/weipingxiang/github/componentlook/tests/fixtures/react/index.tsx
+#/Users/weipingxiang/github/componentlook/fixtures/react/index.tsx
 
 ```
 
