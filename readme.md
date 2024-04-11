@@ -41,7 +41,8 @@ The tsconfig is needed in the workspace root.
 
 ```bash
 # you type
-componentlook fixtures/react/index.tsx
+cd fixtures/react
+componentlook src/index.tsx
 
 # output
 #React Function Component(2):

@@ -5,11 +5,13 @@ import { isVueClassAPI } from "./pattern/vue/class.js";
 import { isVueJSX } from "./pattern/vue/jsx.js";
 import { isVueCompositionAPI } from "./pattern/vue/composition.js";
 import { isVueOptionAPI } from "./pattern/vue/option.js";
-import { COMPONENT_TYPE } from "./constant/index.js";
+import { COMPONENT_TYPE, baseCompilerOptions } from "./constant/index.js";
 import path from "path";
 import { printResult } from "./utils/index.js";
 import { getDependencies, readJson } from "./utils/string.js";
 import { existsSync } from "fs";
+import { SourceFileManager } from "./typescript/source-file-manager.js";
+import { createHost } from "./typescript/create-host.js";
 
 
 /**
@@ -85,12 +87,16 @@ export async function parse(_entry, options) {
     process.exit(-1);
   }
   const tsConfig = await readJson(options?.tsconfig || defaultTsconfigPath);
+  const compilerOptions = {
+    ...tsConfig.compilerOptions,
+    ...baseCompilerOptions,
+    allowNonTsExtensions: true,
+  }
   const packageJson = await readJson(defaultPackageJsonPath);
   const dependencies = getDependencies(packageJson);
   const isReact = dependencies.has('react');
   const isVue = dependencies.has('vue');
-
-
+  
   let cache = new Map();
   /** @type {ts.SourceFile | null} */
   let currentSourceFile = null;
@@ -106,29 +112,31 @@ export async function parse(_entry, options) {
       }
     }
 
+    if(isVue) {
+      if(isVueJSX(node)) {
+        cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_JSX);
+      }
 
-    // if(isVueJSX(node)) {
-    //   console.log(currentSourceFile?.fileName, 'is Vue JSX API');
-    //   cache.set(currentSourceFile?.fileName,  'is Vue JSX API');
-    // }
+      if(isVueOptionAPI(node)) {
+        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_OPTION);
+      }
 
-    // if(isVueOptionAPI(node)) {
-    //   cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_OPTION);
-    // }
+      if(isVueClassAPI(node)) {
+        cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_CLASS);
+      }
 
-    // if(isVueClassAPI(node)) {
-    //   cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_CLASS);
-    // }
-
-    // if(isVueCompositionAPI(node)) {
-    //   cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
-    // }
+      if(isVueCompositionAPI(node)) {
+        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
+      }
+    }
 
     if (!cache.get(currentSourceFile?.fileName)) {
       ts.forEachChild(node, visit);
     }
   };
-  const program = ts.createProgram(entry, tsConfig.compilerOptions);
+
+  const compilerHost = createHost({compilerOptions});
+  const program = ts.createProgram(entry, compilerOptions, compilerHost);
 
   const sourceFiles = program.getSourceFiles().filter((sourceFile) => {
     return (
@@ -136,6 +144,7 @@ export async function parse(_entry, options) {
       !sourceFile.fileName.includes("node_modules")
     );
   });
+
 
   sourceFiles.forEach((sourceFile) => {
     currentSourceFile = sourceFile;
