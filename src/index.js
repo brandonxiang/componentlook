@@ -92,6 +92,8 @@ export async function parse(_entry, options) {
     ...baseCompilerOptions,
     allowNonTsExtensions: true,
   }
+
+  delete compilerOptions.moduleResolution;
   const packageJson = await readJson(defaultPackageJsonPath);
   const dependencies = getDependencies(packageJson);
   const isReact = dependencies.has('react');

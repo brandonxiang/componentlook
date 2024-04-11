@@ -34,22 +34,6 @@ export const FOREIGN_FILE_EXTENSIONS = new Set([
 ]);
 
 export const baseCompilerOptions = {
-  target: 7,
-  useDefineForClassFields: true,
-  module: 99,
-  lib: [],
-  skipLibCheck: true,
-  allowImportingTsExtensions: true,
-  resolveJsonModule: true,
-  isolatedModules: true,
-  noEmit: true,
-  jsx: 1,
-  strict: true,
-  noUnusedLocals: true,
-  noUnusedParameters: true,
-  noFallthroughCasesInSwitch: true,
-  configFilePath: undefined,
-  paths: {},
   allowJs: true,
   allowSyntheticDefaultImports: true,
   declaration: false,
@@ -57,11 +41,15 @@ export const baseCompilerOptions = {
   esModuleInterop: true,
   inlineSourceMap: false,
   inlineSources: false,
+  jsx: ts.JsxEmit.Preserve,
   jsxImportSource: undefined,
-  types: [ 'node' ],
+  lib: [],
+  types: ['node'],
+  noEmit: true,
   skipDefaultLibCheck: true,
+  skipLibCheck: true,
   sourceMap: false,
-  allowNonTsExtensions: true
+  allowNonTsExtensions: true,
 };
 
 export const DEFAULT_EXTENSIONS = ['.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.mts', '.cts'];
