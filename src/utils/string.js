@@ -7,13 +7,20 @@ import fs from 'fs';
  */
 export function readJson(path) {
   const jsonString = fs.readFileSync(path, 'utf8');
-  const jsonWithoutComments = jsonString.replace(/\/\/.*|\/\*[^]*?\*\//g, '');
+
   try {
-    const data = JSON.parse(jsonWithoutComments);
+    const data = JSON.parse(jsonString);
     return data;
-  } catch (error) {
-    console.log(error);
-    return {};
+  } catch (jsonError) {
+    try {
+        const jsonWithoutComments = jsonString.replace(/\/\/.*|\/\*[^]*?\*\//g, '');
+        const data = JSON.parse(jsonWithoutComments);
+        return data;
+    } catch (error) {
+      console.log('json parse error:', jsonError);
+      console.log('json without comments error:', error);
+      return {};
+    }
   }
 }
 
