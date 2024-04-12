@@ -76,6 +76,12 @@ export function componentScanner(sourceFile) {
  */
 export async function parse(_entry, options) {
   const entry = _entry.map((m) => path.resolve(m));
+  entry.forEach((e) => {
+    if(!existsSync(e)) {
+      console.error('Entry file not found. ');
+      process.exit(-1);
+    }
+  });
   const defaultTsconfigPath = path.resolve("tsconfig.json");
   const defaultPackageJsonPath = path.resolve("package.json");
   if(!existsSync(defaultPackageJsonPath)) {
