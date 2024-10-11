@@ -1,12 +1,11 @@
 import { COMPONENT_TYPE } from "../constant/index.js";
 import path from 'path';
 
-
 /**
  *
  * @param {Map<string, string>} cache
  */
-export function printResult(cache) {
+export function convertResult(cache) {
   const reactFunctionFileList = [];
   const reactClassFileList = [];
   const vueOptionFileList = [];
@@ -34,6 +33,31 @@ export function printResult(cache) {
       vueJsxFileList.push(key);
     }
   }
+  return {
+    reactFunctionFileList,
+    reactClassFileList,
+    vueOptionFileList,
+    vueCompositionFileList,
+    vueClassFileList,
+    vueJsxFileList,
+  };
+}
+
+
+/**
+ *
+ * @param {Map<string, string>} cache
+ */
+export function printResult(cache) {
+  const {
+      reactFunctionFileList,
+      reactClassFileList,
+      vueOptionFileList,
+      vueCompositionFileList,
+      vueClassFileList,
+      vueJsxFileList,
+  } = convertResult(cache);
+
   if (reactFunctionFileList.length > 0) {
     console.log(
       `${COMPONENT_TYPE.REACT_FUNCTION}(${reactFunctionFileList.length}):`

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "vite": "^5.4.8",
+    "svelte": "^4.2.19"
+  }
+}

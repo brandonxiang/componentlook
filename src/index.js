@@ -7,7 +7,7 @@ import { isVueCompositionAPI } from "./pattern/vue/composition.js";
 import { isVueOptionAPI } from "./pattern/vue/option.js";
 import { COMPONENT_TYPE, baseCompilerOptions } from "./constant/index.js";
 import path from "path";
-import { printResult } from "./utils/index.js";
+import { printResult, convertResult } from "./utils/index.js";
 import { getDependencies, readJson } from "./utils/string.js";
 import { existsSync } from "fs";
 import { SourceFileManager } from "./typescript/source-file-manager.js";
@@ -71,10 +71,10 @@ export function componentScanner(sourceFile) {
 /**
  *
  * @param {string[]} _entry
- * @param {{tsconfig?: string}} [options]
+ * @param {{tsconfig?: string, packageJson?: string}} [options]
  * @returns
  */
-export async function parse(_entry, options) {
+export async function projectScanner(_entry, options) {
   const entry = _entry.map((m) => path.resolve(m));
   entry.forEach((e) => {
     if(!existsSync(e)) {
@@ -100,45 +100,50 @@ export async function parse(_entry, options) {
   }
 
   delete compilerOptions.moduleResolution;
-  const packageJson = await readJson(defaultPackageJsonPath);
+  const packageJson = await readJson(options?.packageJson || defaultPackageJsonPath);
   const dependencies = getDependencies(packageJson);
   const isReact = dependencies.has('react');
   const isVue = dependencies.has('vue');
   
-  let cache = new Map();
+  
+/**
+ * A Map to store cached values.
+ * @type {Map<string, string>}
+ */
+let cache = new Map();
   /** @type {ts.SourceFile | null} */
   let currentSourceFile = null;
   /** @param {ts.Node} node */
   const visit = (node) => {
-    if(isReact) {
+    if(isReact && currentSourceFile?.fileName) {
       if (isReactFunctionComponent(node)) {
-        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_FUNCTION);
+        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.REACT_FUNCTION);
       }
   
       if (isReactClassComponent(node)) {
-        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.REACT_CLASS);
+        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.REACT_CLASS);
       }
     }
 
-    if(isVue) {
+    if(isVue && currentSourceFile?.fileName) {
       if(isVueJSX(node)) {
-        cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_JSX);
+        cache.set(currentSourceFile.fileName,  COMPONENT_TYPE.VUE_JSX);
       }
 
       if(isVueOptionAPI(node)) {
-        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_OPTION);
+        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_OPTION);
       }
 
       if(isVueClassAPI(node)) {
-        cache.set(currentSourceFile?.fileName,  COMPONENT_TYPE.VUE_CLASS);
+        cache.set(currentSourceFile.fileName,  COMPONENT_TYPE.VUE_CLASS);
       }
 
       if(isVueCompositionAPI(node)) {
-        cache.set(currentSourceFile?.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
+        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
       }
     }
 
-    if (!cache.get(currentSourceFile?.fileName)) {
+    if (currentSourceFile?.fileName && !cache.get(currentSourceFile.fileName)) {
       ts.forEachChild(node, visit);
     }
   };
@@ -153,11 +158,24 @@ export async function parse(_entry, options) {
     );
   });
 
-
   sourceFiles.forEach((sourceFile) => {
     currentSourceFile = sourceFile;
     ts.forEachChild(sourceFile, visit);
   });
 
-  printResult(cache);
+  return cache;
 }
+
+
+/**
+ *
+ * @param {string[]} _entry
+ * @param {{tsconfig?: string, packageJson?: string}} [options]
+ * @returns
+ */
+export async function parse (_entry, options) {
+  const res = await projectScanner(_entry, options);
+  printResult(res);
+}
+
+export { convertResult }
