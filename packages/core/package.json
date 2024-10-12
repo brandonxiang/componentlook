@@ -1,0 +1,32 @@
+{
+  "name": "componentlook",
+  "version": "1.0.2",
+  "description": "",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.js",
+    "./slim": "./src/slim.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "uvu tests -i fixtures",
+    "start": "node tests/parse-react-file/index.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "5.4.3",
+    "resolve": "1.22.8",
+    "sade": "^1.8.1",
+    "load-json-file": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "uvu": "^0.5.6",
+    "@types/resolve": "^1.20.6"
+  },
+  "bin": {
+    "componentlook": "bin.js"
+  }
+}

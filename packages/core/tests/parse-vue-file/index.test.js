@@ -13,16 +13,16 @@ test('parse react project', async () => {
   const temp = await projectScanner([entry], { tsconfig, packageJson });
   const res1 = convertResult(temp);
   assert.equal(res1.vueOptionFileList, [
-    '/Users/weipingxiang/github/componentlook/fixtures/vue/src/Book.vue'
+    '/Users/weipingxiang/github/componentlook/packages/core/fixtures/vue/src/Book.vue'
   ]);
   assert.equal(res1.vueCompositionFileList, [
-    '/Users/weipingxiang/github/componentlook/fixtures/vue/src/Head.vue'
+    '/Users/weipingxiang/github/componentlook/packages/core/fixtures/vue/src/Head.vue'
   ]);
   assert.equal(res1.vueClassFileList, [
-    '/Users/weipingxiang/github/componentlook/fixtures/vue/src/Foot.vue'
+    '/Users/weipingxiang/github/componentlook/packages/core/fixtures/vue/src/Foot.vue'
   ]);
   assert.equal(res1.vueJsxFileList, [
-    '/Users/weipingxiang/github/componentlook/fixtures/vue/src/Button.tsx'
+    '/Users/weipingxiang/github/componentlook/packages/core/fixtures/vue/src/Button.tsx'
   ]);
 });
 

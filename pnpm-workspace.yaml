@@ -1,3 +1,3 @@
 packages:
-  - 'fixtures/*'
-  - 'websites'
+  - 'packages/*'
+  - 'packages/core/fixtures/*'
