@@ -1,4 +1,5 @@
 {
+  "name": "@componentlook/web",
   "type": "module",
   "dependencies": {
     "bits-ui": "^0.21.16",
