@@ -29,6 +29,12 @@ class AnotherClass {
 }
 `
 
+const nonVueImportCode = `
+import { reactive } from 'state-lib';
+
+const state = reactive({ count: 0 });
+`
+
 test('judge vue composition API', () => {
   const sourceFile = ts.createSourceFile('MyComponent.vue', targetCode, ts.ScriptTarget.Latest, true);
   assert.equal(componentScanner(sourceFile), COMPONENT_TYPE.VUE_COMPOSITION);
@@ -36,6 +42,11 @@ test('judge vue composition API', () => {
 
 test('judge normal code', () => {
   const sourceFile = ts.createSourceFile('MyComponent.vue', normalCode, ts.ScriptTarget.Latest, true);
+  assert.equal(componentScanner(sourceFile), '');
+});
+
+test('does not classify composition-like calls from non-vue imports', () => {
+  const sourceFile = ts.createSourceFile('MyComponent.vue', nonVueImportCode, ts.ScriptTarget.Latest, true);
   assert.equal(componentScanner(sourceFile), '');
 });
 

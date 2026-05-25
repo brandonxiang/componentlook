@@ -27,6 +27,13 @@ export default {
 }
 `
 
+const nonComponentObjectCode = `
+const tableConfig = {
+  data: [],
+  methods: {}
+}
+`;
+
 test('judge vue option api', () => {
   const sourceFile = ts.createSourceFile('MyComponent.vue', targetCode, ts.ScriptTarget.Latest, true);
   assert.equal(componentScanner(sourceFile), COMPONENT_TYPE.VUE_OPTION);
@@ -34,6 +41,11 @@ test('judge vue option api', () => {
 
 test('judge normal object', () => {
   const sourceFile = ts.createSourceFile('MyComponent.vue', normalCode, ts.ScriptTarget.Latest, true);
+  assert.equal(componentScanner(sourceFile), '');
+});
+
+test('does not classify arbitrary objects with option-like keys', () => {
+  const sourceFile = ts.createSourceFile('MyComponent.vue', nonComponentObjectCode, ts.ScriptTarget.Latest, true);
   assert.equal(componentScanner(sourceFile), '');
 });
 

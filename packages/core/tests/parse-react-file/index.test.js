@@ -13,8 +13,7 @@ test('parse react project', async () => {
   const res1 = convertResult(temp);
   assert.equal(res1.reactFunctionFileList, [
     path.resolve('fixtures/react/src/head.tsx'),
-    path.resolve('fixtures/react/src/foot.tsx'),
-    path.resolve('fixtures/react/src/index.tsx')
+    path.resolve('fixtures/react/src/foot.tsx')
   ]);
   assert.equal(res1.reactClassFileList, [
     path.resolve('fixtures/react/src/index.tsx')
