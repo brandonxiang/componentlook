@@ -58,44 +58,51 @@ export async function projectScanner(_entry, options) {
 
   /**
    * A Map to store cached values.
-   * @type {Map<string, string>}
+   * @type {Map<string, Set<string>>}
    */
   let cache = new Map();
   /** @type {ts.SourceFile | null} */
   let currentSourceFile = null;
+  /** @param {string} componentType */
+  const addComponentType = (componentType) => {
+    if (!currentSourceFile?.fileName) return;
+
+    const currentTypes = cache.get(currentSourceFile.fileName) || new Set();
+    currentTypes.add(componentType);
+    cache.set(currentSourceFile.fileName, currentTypes);
+  };
+
   /** @param {ts.Node} node */
   const visit = (node) => {
     if (isReact && currentSourceFile?.fileName) {
       if (isReactFunctionComponent(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.REACT_FUNCTION);
+        addComponentType(COMPONENT_TYPE.REACT_FUNCTION);
       }
 
       if (isReactClassComponent(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.REACT_CLASS);
+        addComponentType(COMPONENT_TYPE.REACT_CLASS);
       }
     }
 
     if (isVue && currentSourceFile?.fileName) {
       if (isVueJSX(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_JSX);
+        addComponentType(COMPONENT_TYPE.VUE_JSX);
       }
 
       if (isVueOptionAPI(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_OPTION);
+        addComponentType(COMPONENT_TYPE.VUE_OPTION);
       }
 
       if (isVueClassAPI(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_CLASS);
+        addComponentType(COMPONENT_TYPE.VUE_CLASS);
       }
 
       if (isVueCompositionAPI(node)) {
-        cache.set(currentSourceFile.fileName, COMPONENT_TYPE.VUE_COMPOSITION);
+        addComponentType(COMPONENT_TYPE.VUE_COMPOSITION);
       }
     }
 
-    if (currentSourceFile?.fileName && !cache.get(currentSourceFile.fileName)) {
-      ts.forEachChild(node, visit);
-    }
+    ts.forEachChild(node, visit);
   };
 
   const compilerHost = createHost({ compilerOptions });
