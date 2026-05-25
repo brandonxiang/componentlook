@@ -25,7 +25,7 @@ class AnotherClass {
 
 test('judge vue jsx api', () => {
   const sourceFile = ts.createSourceFile('MyComponent.vue', targetCode, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  assert.equal(componentScanner(sourceFile), '');
+  assert.equal(componentScanner(sourceFile), COMPONENT_TYPE.VUE_JSX);
 });
 
 test('judge normal code', () => {

@@ -22,36 +22,31 @@ export function componentScanner(sourceFile) {
    */
   const visit = (node) => {
     if (isReactFunctionComponent(node)) {
-      console.log("is React Function Component");
       containsJsxElement = true;
       componentType = COMPONENT_TYPE.REACT_FUNCTION;
     }
 
     if (isReactClassComponent(node)) {
-      console.log("is React Class Component");
       containsJsxElement = true;
       componentType = COMPONENT_TYPE.REACT_CLASS;
     }
 
-    // if(isVueJSX(node)) {
-    //   console.log('is Vue JSX API');
-    //   containsJsxElement = true;
-    // }
+    if (isVueJSX(node)) {
+      containsJsxElement = true;
+      componentType = COMPONENT_TYPE.VUE_JSX;
+    }
 
     if (isVueClassAPI(node)) {
-      console.log("is Vue Class API");
       containsJsxElement = true;
       componentType = COMPONENT_TYPE.VUE_CLASS;
     }
 
     if (isVueCompositionAPI(node)) {
-      console.log("is Vue Composition API");
       containsJsxElement = true;
       componentType = COMPONENT_TYPE.VUE_COMPOSITION;
     }
 
     if (isVueOptionAPI(node)) {
-      console.log("is Vue Option API");
       containsJsxElement = true;
       componentType = COMPONENT_TYPE.VUE_OPTION;
     }
