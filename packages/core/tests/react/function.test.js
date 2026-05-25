@@ -4,6 +4,7 @@ import ts from 'typescript';
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { componentScanner } from '../../src/index.js';
+import { COMPONENT_TYPE } from '../../src/constant/index.js';
 
 const reactFunctionCode = `
 import React from 'react';
@@ -21,12 +22,12 @@ function nonComponent() {
 
 test('judge react function component', () => {
   const sourceFile = ts.createSourceFile('MyComponent.tsx', reactFunctionCode, ts.ScriptTarget.Latest, true);
-  assert.equal(componentScanner(sourceFile), true);
+  assert.equal(componentScanner(sourceFile), COMPONENT_TYPE.REACT_FUNCTION);
 });
 
 test('judge normal function', () => {
   const sourceFile = ts.createSourceFile('MyComponent.tsx', normalCode, ts.ScriptTarget.Latest, true);
-  assert.equal(componentScanner(sourceFile), false);
+  assert.equal(componentScanner(sourceFile), '');
 });
 
 test.run();
