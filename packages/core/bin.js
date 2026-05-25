@@ -12,6 +12,9 @@ prog
   .option('--tsconfig', 'Specify a tsconfig file')
   .action((opts) => {
     const {_, ...rest} = opts
-    parse(_, rest);
+    parse(_, rest).catch((error) => {
+      console.error(error.message || error);
+      process.exitCode = 1;
+    });
   })
   .parse(process.argv);

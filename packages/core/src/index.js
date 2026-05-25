@@ -13,6 +13,17 @@ import { existsSync } from "fs";
 import { createHost } from "./typescript/create-host.js";
 import { componentScanner } from './slim.js';
  
+export class ScannerError extends Error {
+  /**
+   * @param {string} message
+   * @param {string} code
+   */
+  constructor(message, code) {
+    super(message);
+    this.name = 'ScannerError';
+    this.code = code;
+  }
+}
 
 
 /**
@@ -25,22 +36,26 @@ export async function projectScanner(_entry, options) {
   const entry = _entry.map((m) => path.resolve(m));
   entry.forEach((e) => {
     if (!existsSync(e)) {
-      console.error('Entry file not found. ');
-      process.exit(-1);
+      throw new ScannerError(`Entry file not found: ${e}`, 'ENTRY_NOT_FOUND');
     }
   });
 
-  const defaultTsconfigPath = path.resolve("tsconfig.json");
-  const defaultPackageJsonPath = path.resolve("package.json");
-  if (!existsSync(defaultPackageJsonPath)) {
-    console.error('Please run at the workspace root. ');
-    process.exit(-1);
+  const tsconfigPath = path.resolve(options?.tsconfig || "tsconfig.json");
+  const packageJsonPath = path.resolve(options?.packageJson || "package.json");
+
+  if (!existsSync(packageJsonPath)) {
+    throw new ScannerError(
+      `Package manifest not found: ${packageJsonPath}. Run from the workspace root or pass packageJson.`,
+      'PACKAGE_JSON_NOT_FOUND'
+    );
   }
-  if (!existsSync(defaultTsconfigPath)) {
-    console.error('Please add a tsconfig at the workspace root, or customize it. ');
-    process.exit(-1);
+  if (!existsSync(tsconfigPath)) {
+    throw new ScannerError(
+      `TypeScript config not found: ${tsconfigPath}. Add tsconfig.json or pass tsconfig.`,
+      'TSCONFIG_NOT_FOUND'
+    );
   }
-  const tsConfig = await readJson(options?.tsconfig || defaultTsconfigPath);
+  const tsConfig = await readJson(tsconfigPath);
 
   const compilerOptions = {
     ...tsConfig.compilerOptions,
@@ -49,7 +64,7 @@ export async function projectScanner(_entry, options) {
   }
 
   delete compilerOptions.moduleResolution;
-  const packageJson = await readJson(options?.packageJson || defaultPackageJsonPath);
+  const packageJson = await readJson(packageJsonPath);
   
   const dependencies = getDependencies(packageJson);
   const isReact = dependencies.has('react');
