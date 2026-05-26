@@ -3,7 +3,7 @@ import path from 'path';
 
 /**
  *
- * @param {Map<string, string>} cache
+ * @param {Map<string, string | Set<string>>} cache
  */
 export function convertResult(cache) {
   const reactFunctionFileList = [];
@@ -14,22 +14,24 @@ export function convertResult(cache) {
   const vueJsxFileList = [];
 
   for (const [key, value] of cache) {
-    if (value === COMPONENT_TYPE.REACT_FUNCTION) {
+    const componentTypes = value instanceof Set ? value : new Set([value]);
+
+    if (componentTypes.has(COMPONENT_TYPE.REACT_FUNCTION)) {
       reactFunctionFileList.push(key);
     }
-    if (value === COMPONENT_TYPE.REACT_CLASS) {
+    if (componentTypes.has(COMPONENT_TYPE.REACT_CLASS)) {
       reactClassFileList.push(key);
     }
-    if (value === COMPONENT_TYPE.VUE_OPTION) {
+    if (componentTypes.has(COMPONENT_TYPE.VUE_OPTION)) {
       vueOptionFileList.push(key);
     }
-    if (value === COMPONENT_TYPE.VUE_COMPOSITION) {
+    if (componentTypes.has(COMPONENT_TYPE.VUE_COMPOSITION)) {
       vueCompositionFileList.push(key);
     }
-    if (value === COMPONENT_TYPE.VUE_CLASS) {
+    if (componentTypes.has(COMPONENT_TYPE.VUE_CLASS)) {
       vueClassFileList.push(key);
     }
-    if (value === COMPONENT_TYPE.VUE_JSX) {
+    if (componentTypes.has(COMPONENT_TYPE.VUE_JSX)) {
       vueJsxFileList.push(key);
     }
   }

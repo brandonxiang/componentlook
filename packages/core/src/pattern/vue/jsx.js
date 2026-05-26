@@ -34,22 +34,5 @@ export const isVueJSX = (node) => {
     }
   }
   // 检查函数表达式，可能是无状态组件
-  else if (ts.isVariableStatement(node)) {
-    for (const declaration of node.declarationList.declarations) {
-      if (declaration.initializer && (ts.isArrowFunction(declaration.initializer) || ts.isFunctionExpression(declaration.initializer))) {
-        const functionBody = declaration.initializer.body;
-        if (ts.isBlock(functionBody)) {
-          functionBody.statements.forEach((statement) => {
-            if (ts.isReturnStatement(statement) && statement.expression) {
-              checkForJSXElement(statement.expression);
-            }
-          });
-        } else if (functionBody) {
-          // 当函数体是一个单一表达式时，它可能直接返回 JSX
-          checkForJSXElement(functionBody);
-        }
-      }
-    }
-  }
   return usesJSX;
 };

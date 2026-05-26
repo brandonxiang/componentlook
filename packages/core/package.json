@@ -1,7 +1,7 @@
 {
   "name": "componentlook",
   "version": "1.0.2",
-  "description": "",
+  "description": "Static analysis toolkit for detecting React and Vue component writing styles.",
   "exports": {
     "./package.json": "./package.json",
     ".": "./src/index.js",
@@ -12,8 +12,15 @@
     "test": "uvu tests -i fixtures",
     "start": "node tests/parse-react-file/index.test.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "react",
+    "vue",
+    "component",
+    "static-analysis",
+    "ast",
+    "cli"
+  ],
+  "author": "brandonxiang",
   "license": "MIT",
   "dependencies": {
     "typescript": "5.4.3",

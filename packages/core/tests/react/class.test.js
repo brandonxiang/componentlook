@@ -1,10 +1,8 @@
-
-
-
 import ts from 'typescript';
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { componentScanner } from '../../src/index.js';
+import { COMPONENT_TYPE } from '../../src/constant/index.js';
 
 const reactClassCode = `
 import React, { Component } from 'react';
@@ -32,12 +30,12 @@ class AnotherClass {
 
 test('judge react class component', () => {
   const sourceFile = ts.createSourceFile('MyComponent.tsx', reactClassCode, ts.ScriptTarget.Latest, true);
-  assert.equal(componentScanner(sourceFile), true);
+  assert.equal(componentScanner(sourceFile), COMPONENT_TYPE.REACT_CLASS);
 });
 
 test('judge normal class', () => {
   const sourceFile = ts.createSourceFile('MyComponent.tsx', normalCode, ts.ScriptTarget.Latest, true);
-  assert.equal(componentScanner(sourceFile), false);
+  assert.equal(componentScanner(sourceFile), '');
 });
 
 test.run();
