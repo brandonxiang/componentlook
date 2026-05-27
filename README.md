@@ -88,6 +88,25 @@ console.log(report.reactFunctionFileList);
 console.log(report.vueCompositionFileList);
 ```
 
+Detect a component style directly from source code:
+
+```js
+import { COMPONENT_TYPE, detectComponentType, isComponentType } from "componentlook";
+
+const fileContent = `
+export function ProfileCard() {
+  return <section>Profile</section>;
+}
+`;
+
+const detectedType = detectComponentType(fileContent, { fileName: "ProfileCard.tsx" });
+const isReactFunction = isComponentType(
+  COMPONENT_TYPE.REACT_FUNCTION,
+  fileContent,
+  { fileName: "ProfileCard.tsx" }
+);
+```
+
 For lightweight single-file or pre-compiled use cases, see the `componentlook/slim` export.
 
 ## Local Development

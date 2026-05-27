@@ -8,6 +8,51 @@ import { isVueOptionAPI } from "./pattern/vue/option.js";
 import { COMPONENT_TYPE } from "./constant/index.js";
 
 /**
+ * @param {string} fileName
+ * @returns {ts.ScriptKind}
+ */
+function getScriptKind(fileName) {
+  if (fileName.endsWith(".jsx")) return ts.ScriptKind.JSX;
+  if (fileName.endsWith(".tsx")) return ts.ScriptKind.TSX;
+  if (fileName.endsWith(".ts")) return ts.ScriptKind.TS;
+  if (fileName.endsWith(".vue")) return ts.ScriptKind.TSX;
+
+  return ts.ScriptKind.JS;
+}
+
+/**
+ * Detect the first component writing style in a source string.
+ *
+ * @param {string} fileContent
+ * @param {{fileName?: string}} [options]
+ * @returns {string}
+ */
+export function detectComponentType(fileContent, options = {}) {
+  const fileName = options.fileName || "Component.tsx";
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    fileContent,
+    ts.ScriptTarget.Latest,
+    true,
+    getScriptKind(fileName)
+  );
+
+  return componentScanner(sourceFile);
+}
+
+/**
+ * Check whether a source string matches a specific component writing style.
+ *
+ * @param {string} componentType
+ * @param {string} fileContent
+ * @param {{fileName?: string}} [options]
+ * @returns {boolean}
+ */
+export function isComponentType(componentType, fileContent, options = {}) {
+  return detectComponentType(fileContent, options) === componentType;
+}
+
+/**
  *
  * @param {ts.SourceFile} sourceFile
  * @returns
@@ -61,3 +106,5 @@ export function componentScanner(sourceFile) {
 
   return componentType;
 }
+
+export { COMPONENT_TYPE };

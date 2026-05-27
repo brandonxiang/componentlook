@@ -11,7 +11,6 @@ import { printResult, convertResult } from "./utils/index.js";
 import { getDependencies, readJson } from "./utils/string.js";
 import { existsSync } from "fs";
 import { createHost } from "./typescript/create-host.js";
-import { componentScanner } from './slim.js';
  
 export class ScannerError extends Error {
   /**
@@ -151,4 +150,10 @@ export async function parse(_entry, options) {
   printResult(res);
 }
 
-export { convertResult, componentScanner }
+export {
+  componentScanner,
+  COMPONENT_TYPE,
+  detectComponentType,
+  isComponentType
+} from './slim.js';
+export { convertResult };

@@ -54,6 +54,36 @@ componentlook src/index.tsx
 
 ```
 
+## Programmatic API
+
+Scan a project entry and convert the grouped result:
+
+```js
+import { projectScanner, convertResult } from "componentlook";
+
+const resultMap = await projectScanner(["src/index.tsx"]);
+const report = convertResult(resultMap);
+```
+
+Detect component style directly from a source string:
+
+```js
+import { COMPONENT_TYPE, detectComponentType, isComponentType } from "componentlook";
+
+const fileContent = `
+export function ProfileCard() {
+  return <section>Profile</section>;
+}
+`;
+
+const detectedType = detectComponentType(fileContent, { fileName: "ProfileCard.tsx" });
+const isReactFunction = isComponentType(
+  COMPONENT_TYPE.REACT_FUNCTION,
+  fileContent,
+  { fileName: "ProfileCard.tsx" }
+);
+```
+
 
 
 ## License
